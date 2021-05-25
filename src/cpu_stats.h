@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef CPU_STATS_H
+#define CPU_STATS_H
 
 typedef struct {
   float user;
@@ -19,4 +19,4 @@ cpu_stats get_cpu_stats();
 // NULL, it formats a header line in the string.
 char *format_cpu_stats(cpu_stats *stats, const char *sep);
 
-#endif /* CPU_H */
+#endif /* CPU_STATS_H */

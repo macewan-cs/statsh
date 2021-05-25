@@ -7,7 +7,7 @@
 #include <signal.h>
 #include <time.h>
 
-#include "interrupts.h"
+#include "signals.h"
 
 static bool *received_timer_signal;
 static bool *received_intr_signal;

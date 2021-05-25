@@ -5,16 +5,16 @@ LDLIBS+=-lrt
 
 all: fstat
 
-fstat: main.o interrupts.o cpu_stats.o mem_stats.o
+fstat: main.o signals.o cpu_stats.o mem_stats.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-main.o: main.c interrupts.h cpu_stats.h
+main.o: main.c signals.h cpu_stats.h
 
 cpu_stats.o: cpu_stats.c cpu_stats.h
 
 mem_stats.o: mem_stats.c mem_stats.h
 
-interrupts.o: interrupts.c interrupts.h
+signals.o: signals.c signals.h
 
 clean:
-	$(RM) fstat main.o interrupts.o cpu_stats.o mem_stats.o
+	$(RM) fstat main.o signals.o cpu_stats.o mem_stats.o

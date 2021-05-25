@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#include "interrupts.h"
+#include "signals.h"
 #include "cpu_stats.h"
 #include "mem_stats.h"
 
