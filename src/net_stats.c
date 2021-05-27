@@ -98,28 +98,29 @@ char *format_net_stats (net_stats *stats, const char *sep)
 
   if (stats != NULL)
     {
-      snprintf (buf, FORMATTED_BUF_SIZE, "%ld%s%ld%s%ld%s%ld%s%ld%s%ld%s",
+      snprintf (buf, FORMATTED_BUF_SIZE, "%ld%s%ld%s%ld%s%ld%s%ld%s%ld",
                 stats->rx_Bps, sep,
                 stats->rx_pps, sep,
                 stats->tx_Bps, sep,
                 stats->rx_pps, sep,
                 stats->rx_Bps + stats->tx_Bps, sep,
-                stats->rx_pps + stats->tx_pps, sep
+                stats->rx_pps + stats->tx_pps
       );
     }
   else
     {
-      snprintf (buf, FORMATTED_BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s%s",
+      snprintf (buf, FORMATTED_BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s",
                 "rx Bps", sep,
                 "rx pps", sep,
                 "tx Bps", sep,
                 "tx pps", sep,
                 "total Bps", sep,
-                "total pps", sep
+                "total pps"
       );
     }
   return buf;
 }
+
 void refresh_net_state ()
 {
   off_t offset = lseek (proc_net_dev_fd, 0, SEEK_SET);
