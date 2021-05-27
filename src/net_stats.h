@@ -1,6 +1,5 @@
 #ifndef NET_STATS_H
 #define NET_STATS_H
-#include <sys/time.h>
 
 // max device name length is 16.
 // ref: https://elixir.bootlin.com/linux/v5.10.39/source/include/uapi/linux/if.h#L33
