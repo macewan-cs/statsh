@@ -3,11 +3,12 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <net/route.h>
 #include <sys/time.h>
 #include "net_stats.h"
 
 #define PROC_NET_DEV_PATH "/proc/net/dev"
+#define PROC_NET_ROUTE_PATH "/proc/net/route"
 #define BUF_SIZE (1024 * 16)
 #define FORMATTED_BUF_SIZE (1024 * 1)
 
@@ -20,9 +21,71 @@ typedef struct {
     struct timeval ts;
 } net_stats_internal;
 
-static char *dev_name = "enp68s0";
+static char *dev_name = "eth0";
 static int proc_net_dev_fd = -1;
 static net_stats_internal past, latest;
+
+static char *read_proc_net_route ()
+{
+  static char buf[BUF_SIZE];
+
+  int proc_net_route_fd = open (PROC_NET_ROUTE_PATH, O_RDONLY);
+  if (proc_net_route_fd == -1)
+    {
+      perror ("open (" PROC_NET_ROUTE_PATH ")");
+      exit (EXIT_FAILURE);
+    }
+
+  int bytes = read (proc_net_route_fd, buf, BUF_SIZE);
+  if (bytes == -1)
+    {
+      perror ("read (" PROC_NET_ROUTE_PATH ")");
+      exit (EXIT_FAILURE);
+    }
+
+  close (proc_net_route_fd);
+
+  return buf;
+}
+
+static void attempt_gateway_detection ()
+{
+  char *route_data = read_proc_net_route ();
+
+  // Skip the first line
+  route_data = strchr (route_data, '\n');
+  if (route_data)
+    {
+      route_data++; // Advance past \n
+    }
+
+  while (route_data)
+    {
+      static char candidate_iface[BUF_SIZE];
+      unsigned int candidate_flags;
+
+      int matches = sscanf(route_data, "%s %*x %*x %x", candidate_iface,
+			   &candidate_flags);
+      if (matches != 2)
+	{
+	  return;
+	}
+
+      if (candidate_flags & RTF_GATEWAY)
+	{
+	  fprintf(stderr, "Automatically detected network interface as %s.\n",
+		  candidate_iface);
+	  dev_name = candidate_iface;
+	  return;
+	}
+
+      route_data = strchr (route_data, '\n');
+      if (route_data)
+	{
+	  route_data++; // Advance past \n
+	}
+    }
+}
 
 void set_dev_dev (char *new_dev)
 {
@@ -38,6 +101,7 @@ void initialize_net_state ()
       exit (EXIT_FAILURE);
     }
 
+  attempt_gateway_detection ();
 }
 
 void cleanup_net_state ()
