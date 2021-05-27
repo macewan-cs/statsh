@@ -8,6 +8,7 @@
 
 #include "signals.h"
 #include "cpu_stats.h"
+#include "disk_stats.h"
 #include "mem_stats.h"
 #include "net_stats.h"
 
@@ -20,17 +21,20 @@ int main ()
   register_timer_signal_handler (&received_timer_signal);
 
   initialize_cpu_state ();
+  initialize_disk_state ();
   initialize_mem_state ();
   initialize_net_state ();
 
-  printf ("%s,%s,%s\n",
+  printf ("%s,%s,%s,%s\n",
           format_cpu_stats (NULL, ","),
+          format_disk_stats (NULL, ","),
           format_mem_stats (NULL, ","),
           format_net_stats (NULL, ","));
 
   create_and_start_timer (500);
 
   refresh_cpu_state ();
+  refresh_disk_state ();
   refresh_mem_state ();
   refresh_net_state ();
 
@@ -41,15 +45,18 @@ int main ()
       if (received_timer_signal)
         {
           refresh_cpu_state ();
+	  refresh_disk_state ();
           refresh_mem_state ();
           refresh_net_state ();
 
           cpu_stats cpu_stats = get_cpu_stats ();
+          disk_stats disk_stats = get_disk_stats ();
           mem_stats mem_stats = get_mem_stats ();
           net_stats net_stats = get_net_stats ();
 
-          printf ("%s,%s,%s\n",
+          printf ("%s,%s,%s,%s\n",
                   format_cpu_stats (&cpu_stats, ","),
+                  format_disk_stats (&disk_stats, ","),
                   format_mem_stats (&mem_stats, ","),
                   format_net_stats (&net_stats, ","));
 
@@ -63,6 +70,7 @@ int main ()
     }
 
   cleanup_cpu_state ();
+  cleanup_disk_state ();
   cleanup_mem_state ();
   cleanup_net_state ();
 
