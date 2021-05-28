@@ -48,7 +48,7 @@ static char *read_proc_net_route ()
   return buf;
 }
 
-static void attempt_gateway_detection ()
+static void attempt_gateway_detection (config *cfg)
 {
   char *route_data = read_proc_net_route ();
 
@@ -73,8 +73,12 @@ static void attempt_gateway_detection ()
 
       if (candidate_flags & RTF_GATEWAY)
 	{
-	  fprintf(stderr, "Automatically detected network interface as %s.\n",
-		  candidate_iface);
+	  if (!cfg->quiet)
+	    {
+	      fprintf(stderr, "Automatically detected network interface as %s.\n",
+		      candidate_iface);
+	    }
+
 	  dev_name = candidate_iface;
 	  return;
 	}
@@ -92,7 +96,7 @@ void set_dev_dev (char *new_dev)
   dev_name = new_dev;
 }
 
-void initialize_net_state ()
+void initialize_net_state (config *cfg)
 {
   proc_net_dev_fd = open (PROC_NET_DEV_PATH, O_RDONLY);
   if (proc_net_dev_fd == -1)
@@ -101,7 +105,7 @@ void initialize_net_state ()
       exit (EXIT_FAILURE);
     }
 
-  attempt_gateway_detection ();
+  attempt_gateway_detection (cfg);
 }
 
 void cleanup_net_state ()
