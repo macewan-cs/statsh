@@ -4,6 +4,8 @@
 // https://stackoverflow.com/questions/62126052/setvbuf-not-changing-buffer-size
 
 #include <bits/posix1_lim.h>
+#include <libgen.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,12 +17,71 @@
 #include "mem_stats.h"
 #include "net_stats.h"
 
+typedef struct {
+  char *program_name;
+  float delay_seconds;
+} config;
+
 static char hostname[_POSIX_HOST_NAME_MAX + 1];
 static bool received_timer_signal = false;
 static bool received_intr_signal = false;
 
-int main ()
+static void usage(config *cfg)
 {
+  printf("usage: %s [options]\n\
+\n\
+Options:\n\
+ -d sec   Seconds between updates (default: %f)\n",
+	 cfg->program_name,
+	 cfg->delay_seconds);
+}
+
+static void process_arguments(int argc, char *argv[], config *cfg)
+{
+  int opt;
+
+  while ((opt = getopt (argc, argv, "d:h")) != -1)
+    {
+      float f;
+
+      switch (opt)
+	{
+	case 'd':
+	  f = strtof (optarg, NULL);
+	  if (f == 0)
+	    {
+	      usage (cfg);
+	      exit (EXIT_FAILURE);
+	    }
+
+	  cfg->delay_seconds = f;
+	  break;
+
+	case 'h':
+	  usage (cfg);
+	  exit (EXIT_SUCCESS);
+	  break;
+
+	case '?':
+	  usage (cfg);
+	  exit (EXIT_FAILURE);
+	}
+    }
+}
+
+static config create_config(char *program_name)
+{
+  return (config){
+    .program_name = basename(program_name),
+    .delay_seconds = 1.0,
+  };
+}
+
+int main (int argc, char *argv[])
+{
+  config cfg = create_config(argv[0]);
+  process_arguments (argc, argv, &cfg);
+
   register_intr_signal_handler (&received_intr_signal);
   register_timer_signal_handler (&received_timer_signal);
 
@@ -43,7 +104,8 @@ int main ()
           format_mem_stats (NULL, ","),
           format_net_stats (NULL, ","));
 
-  create_and_start_timer (10);
+  unsigned long delay_milliseconds = (unsigned long)roundf (cfg.delay_seconds * 1000.0);
+  create_and_start_timer (delay_milliseconds);
 
   refresh_cpu_state ();
   refresh_disk_state ();

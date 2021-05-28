@@ -1,6 +1,6 @@
 CFLAGS+=-g -Wall -std=c99 -pedantic
 LDFLAGS+=-g
-LDLIBS+=-lrt
+LDLIBS+=-lrt -lm
 
 .PHONY: clean all
 
