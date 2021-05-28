@@ -3,10 +3,10 @@
 
 typedef struct {
   float read_Bps;
-  long read_ops;
+  float read_ops;
   float write_Bps;
-  long write_ops;
-  long in_progress;
+  float write_ops;
+  unsigned long in_progress;
 } disk_stats;
 
 // initialize_disk_state initializes any internal state for recording disk stats.

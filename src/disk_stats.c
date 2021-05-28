@@ -1,12 +1,21 @@
+#define _DEFAULT_SOURCE
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include "disk_stats.h"
+
+// Sector size is 512 B inside kernel even for 4 KB disks.
+//
+// Reference:
+// https://kernelnewbies.kernelnewbies.narkive.com/mWzSfGUI/why-is-sector-size-512-inside-kernel
+#define SECTOR_SIZE 512
 
 #define PROC_DISKSTATS_PATH "/proc/diskstats"
 #define BUF_SIZE (1024 * 16)
@@ -75,20 +84,78 @@ static char *read_proc_diskstats ()
 void refresh_disk_state ()
 {
   char *diskstats_data = read_proc_diskstats ();
+
+  char *line = strsep (&diskstats_data, "\n");
+  while (line && *line != '\0')
+    {
+      char temp_dev_name[BUF_SIZE];
+      disk_stats_internal temp_stats;
+
+      int count = sscanf (line,
+			  // mj mn dv rc  rm  sr  tsr wc  wm  sw  tsw ioc
+			  "%*d %*d %s %lu %lu %lu %*u %lu %lu %lu %*u %lu",
+			  temp_dev_name,
+			  &temp_stats.reads_completed, &temp_stats.reads_merged,
+			  &temp_stats.sectors_read,
+			  &temp_stats.writes_completed, &temp_stats.writes_merged,
+			  &temp_stats.sectors_written,
+			  &temp_stats.in_progress);
+      if (count != 8)
+	{
+	  fprintf (stderr, "cannot parse diskstats line: %s\n", line);
+	  continue;
+	}
+
+      if (strcmp (dev_name, temp_dev_name) == 0)
+	{
+	  past = latest;
+	  latest = temp_stats;
+	  gettimeofday (&latest.ts, NULL);
+	  return;
+	}
+
+      line = strsep (&diskstats_data, "\n");
+    }
 }
 
-disk_stats get_disk_stats()
+disk_stats get_disk_stats ()
 {
-  disk_stats return_val = (disk_stats){
-    0
+  long ms_lapsed = (latest.ts.tv_sec - past.ts.tv_sec) * 1000
+                   + (latest.ts.tv_usec - past.ts.tv_usec) / 1000;
+
+  disk_stats stats = (disk_stats){
+    .read_Bps = (float)(latest.sectors_read - past.sectors_read) * 512.0 * 1000.0 / ms_lapsed,
+    .read_ops = (float)(latest.reads_completed - past.reads_completed) * 1000.0 / ms_lapsed,
+    .write_Bps = (float)(latest.sectors_written - past.sectors_written) * 512.0 * 1000.0 / ms_lapsed,
+    .write_ops = (float)(latest.writes_completed - past.writes_completed) * 1000.0 / ms_lapsed,
+    .in_progress = latest.in_progress,
   };
 
-  return return_val;
+  return stats;
 }
 
-char *format_disk_stats(disk_stats *stats, const char *sep)
+char *format_disk_stats (disk_stats *stats, const char *sep)
 {
   static char buf[FORMATTED_BUF_SIZE] = "";
+
+  if (stats == NULL)
+    {
+      snprintf (buf, FORMATTED_BUF_SIZE, "%s%s%s%s%s%s%s%s%s",
+                "read Bps", sep,
+                "read ops", sep,
+                "write Bps", sep,
+                "write ops", sep,
+                "in progress");
+    }
+  else
+    {
+      snprintf (buf, FORMATTED_BUF_SIZE, "%.2f%s%.2f%s%.2f%s%.2f%s%lu",
+                stats->read_Bps, sep,
+                stats->read_ops, sep,
+                stats->write_Bps, sep,
+                stats->write_ops, sep,
+                stats->in_progress);
+    }
 
   return buf;
 }
