@@ -49,8 +49,8 @@ void create_and_start_timer(long milliseconds)
     }
 
   struct itimerspec itimer_spec = { 0 };
-  itimer_spec.it_value.tv_sec = 0;
-  itimer_spec.it_value.tv_nsec = milliseconds * 1000000L;
+  itimer_spec.it_value.tv_sec = milliseconds / 1000;
+  itimer_spec.it_value.tv_nsec = (milliseconds % 1000) * 1000000L;
   itimer_spec.it_interval.tv_sec = itimer_spec.it_value.tv_sec;
   itimer_spec.it_interval.tv_nsec = itimer_spec.it_value.tv_nsec;
 
