@@ -7,6 +7,7 @@ typedef struct {
   char *program_name;
   float delay_seconds;
   bool quiet;
+  bool timestamp;
 } config;
 
 config create_config(char *program_name);

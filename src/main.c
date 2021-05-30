@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 #include "config.h"
 #include "signals.h"
@@ -21,58 +22,63 @@ static char hostname[_POSIX_HOST_NAME_MAX + 1];
 static bool received_timer_signal = false;
 static bool received_intr_signal = false;
 
-static void usage(config *cfg)
+static void usage (config *cfg)
 {
-  printf("usage: %s [options]\n\
+  printf ("usage: %s [options]\n\
 \n\
 Options:\n\
  -d sec   Seconds between updates (default: %f)\n\
  -h       Display help\n\
+ -t       Include timestamp(ms since epoch) in output\n\
  -q       Quiet\n",
-	 cfg->program_name,
-	 cfg->delay_seconds);
+          cfg->program_name,
+          cfg->delay_seconds);
 }
 
-static void process_arguments(int argc, char *argv[], config *cfg)
+static void process_arguments (int argc, char *argv[], config *cfg)
 {
   int opt;
 
-  while ((opt = getopt (argc, argv, "d:hq")) != -1)
+  while ((opt = getopt (argc, argv, "d:hqt")) != -1)
     {
       float f;
 
       switch (opt)
-	{
-	case 'd':
-	  f = strtof (optarg, NULL);
-	  if (f == 0)
-	    {
-	      usage (cfg);
-	      exit (EXIT_FAILURE);
-	    }
+        {
+          case 'd':
+            f = strtof (optarg, NULL);
+          if (f == 0)
+            {
+              usage (cfg);
+              exit (EXIT_FAILURE);
+            }
 
-	  cfg->delay_seconds = f;
-	  break;
+          cfg->delay_seconds = f;
+          break;
 
-	case 'h':
-	  usage (cfg);
-	  exit (EXIT_SUCCESS);
-	  break;
+          case 'h':
+            usage (cfg);
+          exit (EXIT_SUCCESS);
+          break;
 
-	case 'q':
-	  cfg->quiet = true;
-	  break;
+          case 'q':
+            cfg->quiet = true;
+          break;
 
-	case '?':
-	  usage (cfg);
-	  exit (EXIT_FAILURE);
-	}
+          case 't':
+            cfg->timestamp = true;
+          break;
+
+          case '?':
+            usage (cfg);
+          exit (EXIT_FAILURE);
+        }
     }
 }
 
 int main (int argc, char *argv[])
 {
-  config cfg = create_config(argv[0]);
+  config cfg = create_config (argv[0]);
   process_arguments (argc, argv, &cfg);
 
   register_intr_signal_handler (&received_intr_signal);
@@ -92,15 +98,19 @@ int main (int argc, char *argv[])
 
   if (!cfg.quiet)
     {
+      if (cfg.timestamp)
+        {
+          printf ("timestamp,");
+        }
       printf ("%s,%s,%s,%s,%s\n",
-	      "hostname",
-	      format_cpu_stats (NULL, ","),
-	      format_disk_stats (NULL, ","),
-	      format_mem_stats (NULL, ","),
-	      format_net_stats (NULL, ","));
+              "hostname",
+              format_cpu_stats (NULL, ","),
+              format_disk_stats (NULL, ","),
+              format_mem_stats (NULL, ","),
+              format_net_stats (NULL, ","));
     }
 
-  unsigned long delay_milliseconds = (unsigned long)roundf (cfg.delay_seconds * 1000.0);
+  unsigned long delay_milliseconds = (unsigned long) roundf (cfg.delay_seconds * 1000.0);
   create_and_start_timer (delay_milliseconds);
 
   refresh_cpu_state ();
@@ -115,7 +125,7 @@ int main (int argc, char *argv[])
       if (received_timer_signal)
         {
           refresh_cpu_state ();
-	  refresh_disk_state ();
+          refresh_disk_state ();
           refresh_mem_state ();
           refresh_net_state ();
 
@@ -124,8 +134,17 @@ int main (int argc, char *argv[])
           mem_stats mem_stats = get_mem_stats ();
           net_stats net_stats = get_net_stats ();
 
+          if (cfg.timestamp)
+            {
+              struct timeval tv;
+              gettimeofday (&tv, NULL);
+              printf ("%ld,",
+                      tv.tv_sec * 1000 + tv.tv_usec / 1000
+              );
+            }
+
           printf ("%s,%s,%s,%s,%s\n",
-		  hostname,
+                  hostname,
                   format_cpu_stats (&cpu_stats, ","),
                   format_disk_stats (&disk_stats, ","),
                   format_mem_stats (&mem_stats, ","),

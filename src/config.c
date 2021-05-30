@@ -9,5 +9,6 @@ config create_config(char *program_name)
     .delay_seconds = 1.0,
     .program_name = basename(program_name),
     .quiet = false,
+    .timestamp = false,
   };
 }
