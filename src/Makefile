@@ -4,9 +4,9 @@ LDLIBS+=-lrt -lm
 
 .PHONY: clean all
 
-all: fstat
+all: statsh
 
-fstat: main.o config.o signals.o cpu_stats.o disk_stats.o mem_stats.o net_stats.o
+statsh: main.o config.o signals.o cpu_stats.o disk_stats.o mem_stats.o net_stats.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 main.o: main.c config.h signals.h cpu_stats.h disk_stats.h mem_stats.h net_stats.h
@@ -24,4 +24,4 @@ net_stats.o: net_stats.c net_stats.h config.h
 signals.o: signals.c signals.h
 
 clean:
-	$(RM) fstat main.o config.o signals.o cpu_stats.o disk_stats.o mem_stats.o net_stats.o
+	$(RM) statsh main.o config.o signals.o cpu_stats.o disk_stats.o mem_stats.o net_stats.o
