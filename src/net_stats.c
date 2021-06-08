@@ -170,7 +170,7 @@ char *format_net_stats (net_stats *stats, const char *sep)
                 stats->rx_Bps, sep,
                 stats->rx_pps, sep,
                 stats->tx_Bps, sep,
-                stats->rx_pps, sep,
+                stats->tx_pps, sep,
                 stats->rx_Bps + stats->tx_Bps, sep,
                 stats->rx_pps + stats->tx_pps
       );
