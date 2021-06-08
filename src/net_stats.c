@@ -132,7 +132,7 @@ static void parse_proc_net_dev (char *buf)
               &tmp.rx_bytes,
               &tmp.rx_packets,
               &tmp.tx_bytes,
-              &tmp.tx_bytes
+              &tmp.tx_packets
       );
       if (strcmp (dev_name, tmp.dev_name) == 0)
         {
