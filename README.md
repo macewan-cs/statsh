@@ -65,7 +65,14 @@ The user can configure the rate of samples using a command-line argument.
 
 The recommended setup:
 
-1. Copy the binary to the remote system, e.g., place it in `/usr/bin/statsh`.
+1. Run the following commands to compile and install
+```bash
+cd build
+cmake ..
+make
+# copy the binary executable and manpage into the appropriate directories 
+sudo make install
+```
 2. Create a user for running the tool and configure the user's shell as `/usr/bin/statsh`.
 3. (*Optional*) Setup `.ssh/authorized_keys` for this new account to allow users to connect.
 4. Run the command.
