@@ -67,6 +67,7 @@ The recommended setup:
 
 1. Run the following commands to compile and install
 ```bash
+mkdir build
 cd build
 cmake ..
 make
