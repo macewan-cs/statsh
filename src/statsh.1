@@ -6,6 +6,22 @@ fstat [-d sec] [-h] [-t] [-q]
 .SH DESCRIPTION
 This application writes periodic system resource usage statistics to monitor a system's usage over time.
 It has been designed to serve as a user's login shell.
+
+.SH OPTIONS
+.TP 8
+.B -d
+Update interval in seconds. May be decimal. Default: 0.1
+.TP
+.B -h
+Display help and exit
+.TP
+.B -t
+Include timestamp (ms since epoch) in output
+.TP
+.B -q
+Quite. Omit headers.
+
+.SH DETAILS
 This application can help a user collect system resource usage statistics from a system while providing limited access to a system.
 
 At this time, the collected data include
@@ -85,16 +101,13 @@ the number of packets received and transmitted per second
 .PP
 It produces these fields as comma-separated values (CSV). The user can configure the rate of samples using a command-line argument.
 
-.SH OPTIONS
-.TP 8
-.B -d
-Update interval in seconds. May be decimal. Default: 0.1
-.TP
-.B -h
-Display help and exit
-.TP
-.B -t
-Include timestamp (ms since epoch) in output
-.TP
-.B -q
-Quite. Omit headers.
+.SH AUTHORS
+Dr. Nicolas Boers and Peng Li @
+.UR https://www.macewan.ca/ComputerScience
+MacEwan University
+.UE .
+
+.SH LICENSE
+This program is licenced under GNU GENERAL PUBLIC LICENSE Version 3.
+A copy of the licence may be obtained at
+\%https://www.gnu.org/licenses/gpl\-3.0.txt.
