@@ -1,8 +1,8 @@
-.TH man 1 "09 June 2021" "1.0" "statsh man page"
+.TH man 1 "19 July 2021" "1.0" "statsh man page"
 .SH NAME
 statsh \- periodically monitor system resource usage
 .SH SYNOPSIS
-fstat [-d sec] [-h] [-t] [-q]
+statsh [-d sec] [-h] [-t] [-q]
 .SH DESCRIPTION
 This application writes periodic system resource usage statistics to monitor a system's usage over time.
 It has been designed to serve as a user's login shell.
@@ -10,16 +10,19 @@ It has been designed to serve as a user's login shell.
 .SH OPTIONS
 .TP 8
 .B -d
-Update interval in seconds. May be decimal. Default: 0.1
+Update interval in seconds.
+May be a floating-point number.
+Default: 0.1.
 .TP
 .B -h
-Display help and exit
+Display help and exit.
 .TP
 .B -t
-Include timestamp (ms since epoch) in output
+Include timestamp (milliseconds since epoch) in output.
 .TP
 .B -q
-Quite. Omit headers.
+Quiet.
+Omit headers.
 
 .SH DETAILS
 This application can help a user collect system resource usage statistics from a system while providing limited access to a system.
@@ -33,7 +36,7 @@ General
 optional, the timestamp in milliseconds since epoch
 .TP
 .B hostname
-the system's hostname.
+the system's hostname
 .SS CPU
 .TP 12
 .B user
@@ -66,7 +69,7 @@ the number of I/Os currently in progress
 .SS memory
 .TP 12
 .B total
-the total usable RAM, i.e., physical RAM minus a few reserved bits and the kernel binary code.
+the total usable RAM, i.e., physical RAM minus a few reserved bits and the kernel binary code
 .TP
 .B used
 the used memory (total - free - buffers - cache)
@@ -99,15 +102,16 @@ the number of packets transmitted per second
 .B total pps
 the number of packets received and transmitted per second
 .PP
-It produces these fields as comma-separated values (CSV). The user can configure the rate of samples using a command-line argument.
+It produces these fields as comma-separated values (CSV).
+The user can configure the rate of samples using a command-line argument.
 
 .SH AUTHORS
-Dr. Nicolas Boers and Peng Li @
+Dr. Nicholas Boers and Peng Li @
 .UR https://www.macewan.ca/ComputerScience
 MacEwan University
 .UE .
 
 .SH LICENSE
-This program is licenced under GNU GENERAL PUBLIC LICENSE Version 3.
+This program is licensed under GNU GENERAL PUBLIC LICENSE Version 3.
 A copy of the licence may be obtained at
 \%https://www.gnu.org/licenses/gpl\-3.0.txt.
