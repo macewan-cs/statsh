@@ -1,0 +1,117 @@
+.TH man 1 "19 July 2021" "1.0" "statsh man page"
+.SH NAME
+statsh \- periodically monitor system resource usage
+.SH SYNOPSIS
+statsh [-d sec] [-h] [-t] [-q]
+.SH DESCRIPTION
+This application writes periodic system resource usage statistics to monitor a system's usage over time.
+It has been designed to serve as a user's login shell.
+
+.SH OPTIONS
+.TP 8
+.B -d
+Update interval in seconds.
+May be a floating-point number.
+Default: 0.1.
+.TP
+.B -h
+Display help and exit.
+.TP
+.B -t
+Include timestamp (milliseconds since epoch) in output.
+.TP
+.B -q
+Quiet.
+Omit headers.
+
+.SH DETAILS
+This application can help a user collect system resource usage statistics from a system while providing limited access to a system.
+
+At this time, the collected data include
+
+.SS
+General
+.TP 12
+.B timestamp
+optional, the timestamp in milliseconds since epoch
+.TP
+.B hostname
+the system's hostname
+.SS CPU
+.TP 12
+.B user
+the percent of time running normal (un-niced) user processes
+.TP
+.B nice
+the percent of time running niced user processes
+.TP
+.B system
+the percent of time running in kernel mode
+.TP
+.B idle
+the percent of time not running processes
+.SS disk
+.TP 12
+.B read Bps
+the number of sectors read multiplied by 512 bytes
+.TP
+.B read ops
+the number of reads completed
+.TP
+.B write Bps
+the number of sectors written multiplied by 512 bytes
+.TP
+.B write ops
+the number of writes completed
+.TP
+.B in progress
+the number of I/Os currently in progress
+.SS memory
+.TP 12
+.B total
+the total usable RAM, i.e., physical RAM minus a few reserved bits and the kernel binary code
+.TP
+.B used
+the used memory (total - free - buffers - cache)
+.TP
+.B free
+the free memory (LowFree + HighFree)
+.TP
+.B shared
+the memory consumed in tmpfs filesystems
+.TP
+.B buff/cache
+the buffers + cache + the in-kernel data structures cache that might be reclaimed (SReclaimable)
+.TP
+.B available
+an estimate of the memory available for starting new applications without swapping
+.SS network
+.TP 12
+.B rx Bps
+the number of bytes received per second
+.TP
+.B rx pps
+the number of packets received per second
+.TP
+.B tx Bps
+the number of bytes transmitted per second
+.TP
+.B tx pps
+the number of packets transmitted per second
+.TP
+.B total pps
+the number of packets received and transmitted per second
+.PP
+It produces these fields as comma-separated values (CSV).
+The user can configure the rate of samples using a command-line argument.
+
+.SH AUTHORS
+Dr. Nicholas Boers and Peng Li @
+.UR https://www.macewan.ca/ComputerScience
+MacEwan University
+.UE .
+
+.SH LICENSE
+This program is licensed under GNU GENERAL PUBLIC LICENSE Version 3.
+A copy of the licence may be obtained at
+\%https://www.gnu.org/licenses/gpl\-3.0.txt.
