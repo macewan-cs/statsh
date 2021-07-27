@@ -98,10 +98,10 @@ char *format_cpu_stats(cpu_stats *stats, const char *sep)
   else
     {
       snprintf(buf, FORMATTED_BUF_SIZE, "%s%s%s%s%s%s%s",
-	       "user", sep,
-	       "nice", sep,
-	       "system", sep,
-	       "idle");
+	       "cpu.user.%", sep,
+	       "cpu.nice.%", sep,
+	       "cpu.sys.%", sep,
+	       "cpu.idle.%");
     }
 
   return buf;

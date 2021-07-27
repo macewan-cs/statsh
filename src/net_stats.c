@@ -178,12 +178,12 @@ char *format_net_stats (net_stats *stats, const char *sep)
   else
     {
       snprintf (buf, FORMATTED_BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s",
-                "rx Bps", sep,
-                "rx pps", sep,
-                "tx Bps", sep,
-                "tx pps", sep,
-                "total Bps", sep,
-                "total pps"
+                "net.rx.Bps", sep,
+                "net.rx.pps", sep,
+                "net.tx.Bps", sep,
+                "net.tx.pps", sep,
+                "net.total.Bps", sep,
+                "net.total.pps"
       );
     }
   return buf;

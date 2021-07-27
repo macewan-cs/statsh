@@ -108,12 +108,12 @@ char *format_mem_stats(mem_stats *stats, const char *sep)
   else
     {
       snprintf(buf, FORMATTED_BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s",
-	       "total", sep,
-	       "used", sep,
-	       "free", sep,
-	       "shared", sep,
-	       "buff/cache", sep,
-	       "available");
+	       "mem.total.B", sep,
+	       "mem.used.B", sep,
+	       "mem.free.B", sep,
+	       "mem.shared.B", sep,
+	       "mem.buff-cache.B", sep,
+	       "mem.available.B");
     }
 
   return buf;

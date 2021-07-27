@@ -234,7 +234,7 @@ int main (int argc, char *argv[])
     {
       if (cfg->timestamp)
         {
-          printf ("timestamp,");
+          printf ("timestamp.ms,");
         }
       printf ("%s,%s,%s,%s,%s\n",
               "hostname",

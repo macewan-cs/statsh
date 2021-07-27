@@ -141,11 +141,11 @@ char *format_disk_stats (disk_stats *stats, const char *sep)
   if (stats == NULL)
     {
       snprintf (buf, FORMATTED_BUF_SIZE, "%s%s%s%s%s%s%s%s%s",
-                "read Bps", sep,
-                "read ops", sep,
-                "write Bps", sep,
-                "write ops", sep,
-                "in progress");
+                "disk.read.Bps", sep,
+                "disk.read.ops", sep,
+                "disk.write.Bps", sep,
+                "disk.write.ops", sep,
+                "disk.in-progress.n");
     }
   else
     {
