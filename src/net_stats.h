@@ -19,6 +19,5 @@ void cleanup_net_state ();
 void refresh_net_state ();
 
 net_stats get_net_stats ();
-void set_net_dev (char *new_dev);
 char *format_net_stats (net_stats *stats, const char *sep);
 #endif //NET_STATS_H
