@@ -7,10 +7,11 @@
 config create_default_config (char *program_name)
 {
   return (config){
-    .delay_seconds = 0.1,
+    .delay_seconds = 0.1f,
     .program_name = basename (program_name),
     .quiet = false,
     .timestamp = false,
+    .disk_device = "dm-0"
   };
 }
 

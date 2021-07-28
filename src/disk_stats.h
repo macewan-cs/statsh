@@ -1,5 +1,6 @@
 #ifndef DISK_STATS_H
 #define DISK_STATS_H
+#include "config.h"
 
 typedef struct {
   float read_Bps;
@@ -10,7 +11,7 @@ typedef struct {
 } disk_stats;
 
 // initialize_disk_state initializes any internal state for recording disk stats.
-void initialize_disk_state();
+void initialize_disk_state(config *cfg);
 
 // refresh_disk_state refreshes the internal state for recording disk stats.
 void refresh_disk_state();

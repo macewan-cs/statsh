@@ -5,6 +5,7 @@
 
 typedef struct {
   char *program_name;
+  char *disk_device;
   float delay_seconds;
   bool quiet;
   bool timestamp;

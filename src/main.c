@@ -30,41 +30,41 @@ static void usage (config *cfg)
 \n\
 Options:\n\
  -d sec   Seconds between updates (default: %f)\n\
+ -D dev   Block device name to monitor (default: %s)\r\n\
  -h       Display help\n\
  -t       Include timestamp (ms since epoch) in output\n\
  -q       Quiet\n",
           cfg->program_name,
-          cfg->delay_seconds);
+          cfg->delay_seconds,
+          cfg->disk_device);
 }
 
 static void process_arguments (int argc, char *argv[], config *cfg)
 {
   int opt;
 
-  while ((opt = getopt (argc, argv, "d:hqt")) != -1)
+  while ((opt = getopt (argc, argv, "d:D:hqt")) != -1)
     {
       switch (opt)
         {
-	case 'd':
-          cfg->delay_seconds = strtof (optarg, NULL);;
+          case 'd':cfg->delay_seconds = strtof (optarg, NULL);;
           break;
 
-	case 'h':
-	  usage (cfg);
-	  exit (EXIT_SUCCESS);
-	  break;
-
-	case 'q':
-	  cfg->quiet = true;
-	  break;
-
-	case 't':
-	  cfg->timestamp = true;
+          case 'D':cfg->disk_device = optarg;
           break;
 
-	case '?':
-	  usage (cfg);
-	  exit (EXIT_FAILURE);
+          case 'h':usage (cfg);
+          exit (EXIT_SUCCESS);
+          break;
+
+          case 'q':cfg->quiet = true;
+          break;
+
+          case 't':cfg->timestamp = true;
+          break;
+
+          case '?':usage (cfg);
+          exit (EXIT_FAILURE);
         }
     }
 }
@@ -153,10 +153,10 @@ arguments *arguments_from_string (char *s, char *program_name)
       assert (arg_num < n_strings);
       args->argv[arg_num] = strdup (token);
       if (args->argv[arg_num++] == NULL)
-	{
-	  perror ("strdup");
-	  exit (EXIT_FAILURE);
-	}
+        {
+          perror ("strdup");
+          exit (EXIT_FAILURE);
+        }
 
       token = strtok (NULL, " ");
     }
@@ -226,7 +226,7 @@ int main (int argc, char *argv[])
     }
 
   initialize_cpu_state ();
-  initialize_disk_state ();
+  initialize_disk_state (cfg);
   initialize_mem_state ();
   initialize_net_state (cfg);
 
@@ -274,7 +274,7 @@ int main (int argc, char *argv[])
               gettimeofday (&tv, NULL);
               printf ("%ld,",
                       tv.tv_sec * 1000 + tv.tv_usec / 1000
-		      );
+              );
             }
 
           printf ("%s,%s,%s,%s,%s\n",
